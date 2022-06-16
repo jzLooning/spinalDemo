@@ -1,5 +1,5 @@
-import SpinalHDL_CPU.Tool.Decode
-import SpinalHDL_CPU.Cache._
+import Cache.mmap
+import Tool.Decode
 import spinal.core._
 
 class test extends Component {

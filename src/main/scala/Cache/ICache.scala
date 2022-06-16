@@ -1,4 +1,4 @@
-package SpinalHDL_CPU.Cache
+package Cache
 
 import spinal.core._
 
