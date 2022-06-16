@@ -1,7 +1,12 @@
+import SpinalHDL_CPU.Tool.Decode
+import SpinalHDL_CPU.Cache._
 import spinal.core._
-import tool.Decode
+
+class test extends Component {
+
+}
 object Main{
   def main(args: Array[String]):Unit = {
-    SpinalConfig(targetDirectory = "./build/").generateVerilog(new Decode(3,8))
+    SpinalConfig(targetDirectory = "./build/").generateVerilog(new mmap)
   }
 }

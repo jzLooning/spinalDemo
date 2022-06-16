@@ -1,4 +1,4 @@
-package tool
+package SpinalHDL_CPU.Tool
 
 import spinal.core._
 
