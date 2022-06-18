@@ -27,49 +27,47 @@ class ICache extends Component {
         val inst_pc = in Bits(32 bits)
         val inst_re = in Bool()
     }
+    val cache_line_write = Vec(Bits( 1 bits),Bits(11 bits),Bits(32 bits),Bits(32 bits),Bits(32 bits),Bits(32 bits))
+    val cache_way1 = Mem(Bits(cache_line_write.getBitsWidth bits),256)
+    val cache_way2 = Mem(Bits(cache_line_write.getBitsWidth bits),256)
+    val cache_swap = Bits(256 bits)
 
+    cache_swap := 0
+
+    /**
+     * 处理pc信号
+     */
+    val index = io_inst.inst_pc(11 downto 4).asUInt
+    val tag = io_inst.inst_pc(22 downto 12).asUInt
+    val cache_line_read_way1 = cache_way1(index)
+    val cache_line_read_way2 = cache_way2(index)
+    io_mmap.inst_pc := 0
+    io_mmap.inst_re := False
+    io_inst.inst_bus := 0
+    io_inst.inst_hit := False
+    cache_line_write.foreach(_ := 0)
+
+
+    /**
+     * cache初始化
+     */
+    cache_way1.initBigInt(Seq.fill(256)(0))
+    cache_way2.initBigInt(Seq.fill(256)(0))
+
+    /**
+     * 返回字使能
+     */
+    val pc_2: Bits = io_inst.inst_pc(3 downto 2)
+    io_inst.inst_bus_en(0) := True
+    io_inst.inst_bus_en(1) := pc_2(0) || pc_2(1)
+    io_inst.inst_bus_en(2) := pc_2(1)
+    io_inst.inst_bus_en(3) := pc_2(0) && pc_2(1)
 
 
     /**
      * 状态机
      */
     val cache_fsm = new StateMachine {val load = Bool(false)
-        val cache_line_write = Vec(Bits( 1 bits),Bits(11 bits),Bits(32 bits),Bits(32 bits),Bits(32 bits),Bits(32 bits))
-        val cache_way1 = Mem(Bits(cache_line_write.getBitsWidth bits),256)
-        val cache_way2 = Mem(Bits(cache_line_write.getBitsWidth bits),256)
-        val cache_swap = Bits(256 bits)
-
-        cache_swap := 0
-        /**
-         * 处理pc信号
-         */
-        val index = io_inst.inst_pc(11 downto 4).asUInt
-        val tag = io_inst.inst_pc(22 downto 12).asUInt
-        val cache_line_read_way1 = cache_way1(index)
-        val cache_line_read_way2 = cache_way2(index)
-        io_mmap.inst_pc := 0
-        io_mmap.inst_re := False
-        io_inst.inst_bus := 0
-        io_inst.inst_hit := False
-        cache_line_write.foreach(_ := 0)
-
-
-        /**
-         * cache初始化
-         */
-        cache_way1.initBigInt(Seq.fill(256)(0))
-        cache_way2.initBigInt(Seq.fill(256)(0))
-
-        /**
-         * 返回字使能
-         */
-        val pc_2: Bits = io_inst.inst_pc(3 downto 2)
-        io_inst.inst_bus_en(0) := True
-        io_inst.inst_bus_en(1) := pc_2(0) || pc_2(1)
-        io_inst.inst_bus_en(2) := pc_2(1)
-        io_inst.inst_bus_en(3) := pc_2(0) && pc_2(1)
-
-
         val counter = new Area{
             val counter = Reg(UInt(3 bits)) init(0)
             when (load) {
@@ -164,7 +162,4 @@ class ICache extends Component {
             }
         }
     }
-
-
-
 }
