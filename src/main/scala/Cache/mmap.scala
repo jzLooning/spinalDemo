@@ -10,7 +10,7 @@ class mmap extends Component{
 
         val inst_pc = in Bits(32 bits)
         val inst_re = in Bool()
-        val inst_data_out = out Bits(32 bits)
+        val inst_data = out Bits(32 bits)
     }
 
     /**
@@ -97,7 +97,7 @@ class mmap extends Component{
      */
     val data_from_ram : Bits = io_inst.inst_re ? io_ram.ext_ram_data | (Bits(32 bits).setAllTo(io_data.data_re) & io_ram.base_ram_data)
     io_data.data_data_out := data_from_ram
-    io_inst.inst_data_out := data_from_ram
+    io_inst.inst_data := data_from_ram
 
     /**
      * 写数据
