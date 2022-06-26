@@ -5,10 +5,12 @@ import Pipe_line._
 
 
 class CpuTop extends Component {
-    val config = new ConfigPipeline
-    val if_stage = new IFStage(config)
-    val mmap = new PipeMmap
-    mmap.io_inst <> if_stage.io_mmap
+    val a = SInt(32 bits)
+    val b = SInt(16 bits)
+    val c = SInt(32 bits)
+    a := 12
+    b := -13
+    c := a + b
 }
 object Main{
   def main(args: Array[String]):Unit = {
