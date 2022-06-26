@@ -1,0 +1,40 @@
+package Tool
+
+import Pipe_line.ConfigPipeline
+import spinal.core._
+class Alu extends Component {
+    val io = new Bundle{
+        val alu_op = in Bits(9 bits)
+        val alu_src1 = in Bits(32 bits)
+        val alu_src2 = in Bits(32 bits)
+        val alu_result = out Bits(32 bits)
+    }
+    val config = new ConfigPipeline
+
+    val adder_op = io.alu_op(config.ALU_OP.sub)
+    val adder_a = io.alu_src1
+    val adder_b = adder_op ? ~io.alu_src2 | io.alu_src2
+    val adder_result = adder_a.asUInt + adder_b.asUInt + adder_op.asUInt(32 bits)
+
+    val add_sub_result = adder_result
+    val and_result = io.alu_src1 & io.alu_src2
+    val or_result = io.alu_src1 | io.alu_src2
+    val xor_result = io.alu_src1 ^ io.alu_src2
+    val lui_result = io.alu_src2(15 downto 0) ## B"16'b0"
+    val sll_result = io.alu_src2 |<< io.alu_src1(4 downto 0).asUInt
+    val srl_result = io.alu_src2 |>> io.alu_src1(4 downto 0).asUInt
+    val mul_result = io.alu_src1.asSInt * io.alu_src2.asSInt
+
+    io.alu_result := io.alu_op.mux(
+        1 -> adder_result.asBits,
+        2 -> adder_result.asBits,
+        4 -> and_result.asBits,
+        8 -> or_result.asBits,
+        16 -> xor_result.asBits,
+        32 -> sll_result.asBits,
+        64 -> srl_result.asBits,
+        128 -> lui_result.asBits,
+        256 -> mul_result(31 downto 0).asBits,
+        default -> B(0)
+    )
+}
