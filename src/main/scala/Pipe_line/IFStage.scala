@@ -3,9 +3,10 @@ import spinal.core._
 class IFStage(config: ConfigPipeline) extends Component {
     val io_fs_ds = new Bundle {
         val ds_allowin = in Bool()
-        val br_bus = in Bits(config.BR_BUS_WD bits)
+        val br_bus = in Bits(33 bits)
         val fs_to_ds_valid = out Bool()
-        val fs_to_ds_bus = out Bits(config.FS_TO_DS_BUS_WD bits)
+        val fs_pc = out Bits(32 bits)
+        val fs_inst = out Bits(32 bits)
     }
     val io_mmap = new Bundle {
         val inst_pc = out Bits(32 bits)
@@ -16,7 +17,8 @@ class IFStage(config: ConfigPipeline) extends Component {
     //设置并初始化fs_pc
     val fs_pc = Reg(UInt(32 bits)) init(U"32'h7ffffffc")
     val fs_inst = Bits(32 bits)
-    io_fs_ds.fs_to_ds_bus := fs_pc ## fs_inst
+    io_fs_ds.fs_pc := fs_pc.asBits
+    io_fs_ds.fs_inst := fs_inst.asBits
     //处理br_bus
     val br_taken = io_fs_ds.br_bus(32)
     val br_target = io_fs_ds.br_bus(31 downto 0)
