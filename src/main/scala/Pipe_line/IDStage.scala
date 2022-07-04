@@ -2,6 +2,7 @@ package Pipe_line
 
 import spinal.core._
 import Tool.Decode
+import spinal.core.internals.Operator
 class IDStage() extends Component {
     val io_fs_ds = new Bundle {
         val ds_allowin = out Bool()
@@ -13,8 +14,8 @@ class IDStage() extends Component {
     val io_ds_es = new Bundle {
         val es_allowin = in Bool()
         val ds_to_es_valid = out Bool()
-        val op_st = out Bits(2 bits)
-        val op_mem_l = out Bits(2 bits)
+        val op_st = out Bool()
+        val op_mem_l = out Bool()
         val alu_op = out Bits(9 bits)
         val load_op = out Bool()
         val src1_is_sa = out Bool()
@@ -81,7 +82,7 @@ class IDStage() extends Component {
 
         // 译码器
     val decoder_op = new Decode(6,64)
-    val decoder_func = new Decode(6,32)
+    val decoder_func = new Decode(6,64)
     val decoder_rs = new Decode(5,32)
     val decoder_rt = new Decode(5,32)
     val decoder_rd = new Decode(5,32)
@@ -149,8 +150,8 @@ class IDStage() extends Component {
         val dst_is_rt = inst_addiu || inst_lui || inst_lw || inst_andi || inst_ori || inst_xori || inst_lb
         val gr_we = ~inst_sw && ~inst_beq && ~inst_bne && ~inst_jr && ~inst_bgtz && ~inst_blez && ~inst_j && ~inst_sb
         val imm_zexi = inst_ori || inst_andi || inst_xori
-        val op_mem_l = inst_lw ## inst_lb
-        val op_st = inst_sw ## inst_sb
+        val op_mem_l = inst_lb
+        val op_st = inst_sb
         val mem_we = inst_sw || inst_sb
         val dest = dst_is_r31 ? B"5'd31" | (dst_is_rt ? rt.asBits | rd.asBits)
     }
@@ -177,13 +178,23 @@ class IDStage() extends Component {
     io_fs_ds.br_bus := br_taken.asBits(1 bits) ## br_taken.asBits(32 bits)
 
     //打包上车送入下一级
-    for ((slave_name,slave_element) <- io_ds_es.elements) {
-        for ((master_name,master_element) <- contral_sign.elements) {
-            if (master_name == slave_name) {
-                slave_element := master_element
-            }
-        }
-    }
+    io_ds_es.op_st := contral_sign.op_st
+    io_ds_es.op_mem_l := contral_sign.op_mem_l
+    io_ds_es.alu_op := alu_op
+    io_ds_es.load_op := contral_sign.load_op
+    io_ds_es.src1_is_sa := contral_sign.src1_is_sa
+    io_ds_es.src1_is_pc := contral_sign.src1_is_pc
+    io_ds_es.src2_is_imm := contral_sign.src2_is_imm
+    io_ds_es.src2_is_8 := contral_sign.src2_is_8
+    io_ds_es.gr_we := contral_sign.gr_we
+    io_ds_es.mem_we := contral_sign.mem_we
+    io_ds_es.dest := contral_sign.dest
+    io_ds_es.imm := imm
+    io_ds_es.rs_value := rs_value
+    io_ds_es.rt_value := rt_value
+    io_ds_es.ds_pc := ds_pc
+    io_ds_es.imm_zexi := contral_sign.imm_zexi
+
     //设置流水线前递信号
     io_ds_bubble.rs := rs
     io_ds_bubble.rt := rt
