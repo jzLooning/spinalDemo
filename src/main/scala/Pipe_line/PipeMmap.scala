@@ -23,8 +23,13 @@ class PipeMmap extends Component {
         val data_addr = in Bits(32 bits)
         val data_re = in Bool()
         val data_we = in Bool()
-        val data_data_out = out Bits(32 bits)
         val data_byte_en = in Bits(4 bits)
+    }
+    /**
+     * 访存的mem阶段
+     */
+    val io_mem = new Bundle {
+        val data_data_out = out Bits(32 bits)
         val data_data_ready = out Bool()
     }
 
@@ -53,12 +58,12 @@ class PipeMmap extends Component {
 
 
     /**
-     * 综合处理cpu发过来的请求，优先处理inst请求
+     * 综合处理cpu发过来的请求，优先处理data请求
      */
 
     val mem_request : Bool = io_inst.inst_re || io_data.data_we || io_data.data_re
     val request_addr : Bits = (io_data.data_we || io_data.data_re) ? io_data.data_addr | io_inst.inst_pc
-    io_data.data_data_ready := True
+    io_mem.data_data_ready := True
     io_inst.inst_ready := !(io_data.data_we || io_data.data_re)
 
     when (!mem_option && (io_inst.inst_re || io_data.data_re) && !io_data.data_we) {
@@ -99,7 +104,7 @@ class PipeMmap extends Component {
      * 处理收到的信号
      */
     val data_from_ram : Bits = mem_option ? io_ram.ext_ram_data | io_ram.base_ram_data
-    io_data.data_data_out := data_from_ram
+    io_mem.data_data_out := data_from_ram
     io_inst.inst_data := data_from_ram
 
     /**
