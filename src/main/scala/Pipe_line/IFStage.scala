@@ -1,6 +1,6 @@
 package Pipe_line
 import spinal.core._
-class IFStage(config: ConfigPipeline) extends Component {
+class IFStage() extends Component {
     val io_fs_ds = new Bundle {
         val ds_allowin = in Bool()
         val br_bus = in Bits(33 bits)
