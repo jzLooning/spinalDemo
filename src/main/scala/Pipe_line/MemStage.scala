@@ -27,7 +27,7 @@ class MemStage extends Component {
     }
     val io_ms_bubble = new Bundle {
         val reg_w_valid = out Bool()
-        val dest = out Bool()
+        val dest = out Bits(5 bits)
         val result = out Bits(32 bits)
     }
     // 流水级信号处理
