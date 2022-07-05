@@ -61,8 +61,8 @@ class PipeMmap extends Component {
      * 综合处理cpu发过来的请求，优先处理data请求
      */
 
-    val mem_request : Bool = io_inst.inst_re || io_data.data_we || io_data.data_re
-    val request_addr : Bits = (io_data.data_we || io_data.data_re) ? io_data.data_addr | io_inst.inst_pc
+    val mem_request = io_inst.inst_re || io_data.data_we || io_data.data_re
+    val request_addr = (io_data.data_we || io_data.data_re) ? io_data.data_addr | io_inst.inst_pc
     io_mem.data_data_ready := True
     io_inst.inst_ready := !(io_data.data_we || io_data.data_re)
 
