@@ -4,7 +4,7 @@ class WbStage extends Component {
     val io_ws_ds = new Bundle {
         val rf_we = out Bool()
         val rf_waddr = out Bits(5 bits)
-        val rf_data = out Bits(32 bits)
+        val rf_wdata = out Bits(32 bits)
     }
     val io_ms_ws = new Bundle {
         val ws_allowin = out Bool()
@@ -36,5 +36,5 @@ class WbStage extends Component {
     // 寄存器写回
     io_ws_ds.rf_we := gr_we
     io_ws_ds.rf_waddr := dest
-    io_ws_ds.rf_data := result
+    io_ws_ds.rf_wdata := result
 }
