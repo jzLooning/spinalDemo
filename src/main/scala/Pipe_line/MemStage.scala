@@ -37,8 +37,8 @@ class MemStage extends Component {
     val res_from_mem = Reg(Bool()) init(false)
     val gr_we = Reg(Bool()) init(false)
     val dest = Reg(Bits(5 bits)) init(0)
-    val es_to_ms_result = Reg(Bits(32 bits) init(0))
-    val ms_pc = Reg(Bits(32 bits) init(0))
+    val es_to_ms_result = Reg(Bits(32 bits)) init(0)
+    val ms_pc = Reg(Bits(32 bits)) init(0)
     val ms_ready_go = io_mem.data_data_ready
     val ms_valid = Reg(Bool()) init(false)
     io_es_ms.ms_allowin := !ms_valid || ms_ready_go && io_ms_ws.ws_allowin
