@@ -1,5 +1,4 @@
 
-import Cache.{ICache, mmap}
 import spinal.core._
 import Pipe_line._
 
