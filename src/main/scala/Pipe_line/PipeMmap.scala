@@ -54,74 +54,44 @@ class PipeMmap extends Component {
       val ext_ram_we_n = out Bool()
 
     }
-    val mem_option : Bool = new Bool()
 
+    // 处理inst请求
+    val req_inst = io_inst.inst_re
+    val ram_en_inst = io_inst.inst_pc(22)
 
-    /**
-     * 综合处理cpu发过来的请求，优先处理data请求
-     */
+    // 处理data请求
+    val req_data = io_data.data_re || io_data.data_we
+    val ram_en_data = io_data.data_addr(22)
 
-    val mem_request = io_inst.inst_re || io_data.data_we || io_data.data_re
-    val request_addr = (io_data.data_we || io_data.data_re) ? io_data.data_addr | io_inst.inst_pc
+    // 处理交互请求
+    io_inst.inst_ready := True
     io_mem.data_data_ready := True
-    io_inst.inst_ready := !(io_data.data_we || io_data.data_re)
-
-    when (!mem_option && (io_inst.inst_re || io_data.data_re) && !io_data.data_we) {
-      io_ram.base_ram_re_n.clear()
-    } otherwise {
-      io_ram.base_ram_re_n.set()
-    }
-    when (!mem_option && io_data.data_we) {
-      io_ram.base_ram_we_n.clear()
-    } otherwise {
-      io_ram.base_ram_we_n.set()
-    }
-    when (mem_option && (io_inst.inst_re || io_data.data_re) && !io_data.data_we) {
-      io_ram.ext_ram_re_n.clear()
-    } otherwise {
-      io_ram.ext_ram_re_n.set()
-    }
-    when (mem_option  && io_data.data_we) {
-      io_ram.ext_ram_we_n.clear()
-    } otherwise {
-      io_ram.ext_ram_we_n.set()
+        // data 优先
+    when(req_inst && req_data && (ram_en_inst === ram_en_data)) {
+        io_inst.inst_ready := False
     }
 
-    /**
-     * 内存片选
-     */
-    mem_option := request_addr(22)
-    io_ram.base_ram_ce_n := mem_option
-    io_ram.ext_ram_ce_n := !mem_option
-
-    /**
-     * 请求地址
-     */
-    io_ram.base_ram_addr := request_addr(21 downto 2)
-    io_ram.ext_ram_addr := request_addr(21 downto 2)
-
-    /**
-     * 处理收到的信号
-     */
-    val data_from_ram : Bits = mem_option ? io_ram.ext_ram_data | io_ram.base_ram_data
-    io_mem.data_data_out := data_from_ram
-    io_inst.inst_data := data_from_ram
-
-    /**
-     * 写数据
-     */
+    // 处理下层内存请求
     when(io_data.data_we) {
-      when(mem_option) {
-        io_ram.ext_ram_data := io_data.data_data_in
-      }.otherwise {
-        io_ram.base_ram_data := io_data.data_data_in
-      }
+        when(ram_en_data) {
+            io_ram.ext_ram_data := io_data.data_data_in
+        }otherwise {
+            io_ram.base_ram_data := io_data.data_data_in
+        }
     }
-    when(io_data.data_we || io_data.data_re) {
-        io_ram.base_ram_be_n := ~io_data.data_byte_en
-        io_ram.ext_ram_be_n := ~io_data.data_byte_en
-    } otherwise {
-        io_ram.base_ram_be_n := 0x0
-        io_ram.ext_ram_be_n := 0x0
-    }
+    io_ram.base_ram_addr := (req_data && !ram_en_data) ? io_data.data_addr(21 downto 2).asBits | io_inst.inst_pc(21 downto 2).asBits
+    io_ram.base_ram_be_n := (req_data && !ram_en_data) ? ~io_data.data_byte_en | B"4'h0"
+    io_ram.base_ram_ce_n := !req_inst && !req_data || !req_inst && ram_en_data || ram_en_data && ram_en_inst || !req_data && ram_en_data
+    io_ram.base_ram_re_n := !(req_inst || req_data)
+    io_ram.base_ram_we_n := ~io_data.data_we || ram_en_data
+
+
+    io_ram.ext_ram_addr :=  (req_data && ram_en_data) ? io_data.data_addr(21 downto 2).asBits | io_inst.inst_pc(21 downto 2).asBits
+    io_ram.ext_ram_be_n :=  (req_data && ram_en_data) ? ~io_data.data_byte_en | B"4'h0"
+    io_ram.ext_ram_ce_n :=  !req_inst && !req_data || !req_inst && !ram_en_data || !ram_en_inst && !ram_en_data || !req_data && !ram_en_inst
+    io_ram.ext_ram_re_n := !(req_inst || req_data)
+    io_ram.ext_ram_we_n := ~io_data.data_we || ~ram_en_data
+
+    io_inst.inst_data := ram_en_inst ? io_ram.ext_ram_data | io_ram.base_ram_data
+    io_mem.data_data_out := ram_en_data ? io_ram.ext_ram_data | io_ram.base_ram_data
 }
