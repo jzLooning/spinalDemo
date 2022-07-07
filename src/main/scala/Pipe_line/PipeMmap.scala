@@ -81,7 +81,7 @@ class PipeMmap extends Component {
     }
     io_ram.base_ram_addr := (req_data && !ram_en_data) ? io_data.data_addr(21 downto 2).asBits | io_inst.inst_pc(21 downto 2).asBits
     io_ram.base_ram_be_n := (req_data && !ram_en_data) ? ~io_data.data_byte_en | B"4'h0"
-    io_ram.base_ram_ce_n := !req_inst && !req_data || !req_inst && ram_en_data || ram_en_data && ram_en_inst || !req_data && ram_en_data
+    io_ram.base_ram_ce_n := !req_inst && !req_data || !req_inst && ram_en_data || ram_en_data && ram_en_inst || !req_data && ram_en_inst
     io_ram.base_ram_re_n := !(req_inst || req_data)
     io_ram.base_ram_we_n := ~io_data.data_we || ram_en_data
 

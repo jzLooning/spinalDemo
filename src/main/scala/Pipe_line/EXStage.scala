@@ -123,8 +123,8 @@ class EXStage extends Component {
         }
     }
     io_data.data_byte_en := op_st ? byte_enable | B"4'b1111"
-    io_data.data_we := mem_we
-    io_data.data_re := load_op
+    io_data.data_we := mem_we && es_valid
+    io_data.data_re := load_op && es_valid
 
     // 下一级信号
     io_es_ms.addr_2 := alu_result(1 downto 0)

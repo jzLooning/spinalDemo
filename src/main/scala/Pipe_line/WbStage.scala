@@ -14,6 +14,12 @@ class WbStage extends Component {
         val result = in Bits(32 bits)
         val ms_pc = in Bits(32 bits)
     }
+
+    val io_ws_bubble = new Bundle {
+        val reg_w_valid = out Bool()
+        val dest = out Bits(5 bits)
+        val result = out Bits(32 bits)
+    }
     // 流水级信号处理
     val ws_ready_go = True
     val ws_valid = Reg(Bool()) init(false)
@@ -37,4 +43,9 @@ class WbStage extends Component {
     io_ws_ds.rf_we := gr_we
     io_ws_ds.rf_waddr := dest
     io_ws_ds.rf_wdata := result
+
+    // 流水线前递
+    io_ws_bubble.reg_w_valid := gr_we
+    io_ws_bubble.dest := dest
+    io_ws_bubble.result := result
 }

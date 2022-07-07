@@ -53,7 +53,7 @@ class MemStage extends Component {
         res_from_mem := io_es_ms.res_from_mem
         gr_we :=  io_es_ms.gr_we
         dest := io_es_ms.dest
-        es_to_ms_result := es_to_ms_result
+        es_to_ms_result := io_es_ms.es_to_ms_result
         ms_pc := io_es_ms.es_pc
     }
 

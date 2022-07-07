@@ -143,7 +143,7 @@ class IDStage() extends Component {
     val contral_sign = new Bundle {
         val src1_is_sa = inst_sll || inst_srl
         val src1_is_pc = inst_jal
-        val src2_is_imm = inst_addiu || inst_xori || inst_xori || inst_lw || inst_sw || inst_lb || inst_sb
+        val src2_is_imm = inst_addiu || inst_ori || inst_xori || inst_lw || inst_sw || inst_lb || inst_sb || inst_lui
         val src2_is_8 = inst_jal
         val load_op = inst_lw || inst_lb
         val dst_is_r31 = inst_jal
@@ -175,7 +175,7 @@ class IDStage() extends Component {
     val is_b_inst = inst_beq || inst_bne || inst_bgtz || inst_blez
     val br_target = is_b_inst ? (io_fs_ds.fs_pc.asSInt + (imm ## B"2'b00").asSInt) | (inst_jr ? rs_value.asSInt | (io_fs_ds.fs_pc(31 downto 28) ## jidx(25 downto 0) ## B"2'b0").asSInt)
 
-    io_fs_ds.br_bus := br_taken.asBits(1 bits) ## br_taken.asBits(32 bits)
+    io_fs_ds.br_bus := br_taken.asBits(1 bits) ## br_target.asBits
 
     //打包上车送入下一级
     io_ds_es.op_st := contral_sign.op_st
@@ -199,5 +199,5 @@ class IDStage() extends Component {
     io_ds_bubble.rs := rs
     io_ds_bubble.rt := rt
     io_ds_bubble.rs_read := inst_or || inst_xor || inst_and || inst_andi || inst_ori || inst_addu || inst_addiu || inst_mul || inst_sub || inst_sllv || inst_beq  || inst_bne || inst_blez || inst_bgtz || inst_jr
-    io_ds_bubble.rt_read := inst_or || inst_xor || inst_and || inst_addu || inst_mul || inst_sub || inst_sll || inst_srl || inst_sllv || inst_beq || inst_bne || inst_lb || inst_lw || inst_lui || inst_sb || inst_sw
+    io_ds_bubble.rt_read := inst_or || inst_xor || inst_and || inst_addu || inst_mul || inst_sub || inst_sll || inst_srl || inst_sllv || inst_beq || inst_bne || inst_lb || inst_lw || inst_sb || inst_sw
 }
