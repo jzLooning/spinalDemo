@@ -19,7 +19,15 @@ class CpuTop extends Component {
         val ext_ram_ce_n = out Bool()
         val ext_ram_re_n = out Bool()
         val ext_ram_we_n = out Bool()
+
+        val serial_rdata_en_sign = out Bool()
+        val serial_rdata_en_data = out Bool()
+        val serial_rdata = in Bits(8 bits)
+        val serial_wdata = out Bits(8 bits)
+        val serial_wdata_en = out Bool()
     }
+
+
     val if_stage = new IFStage
     val id_stage = new IDStage
     val ex_stage = new EXStage
@@ -42,6 +50,15 @@ class CpuTop extends Component {
     id_stage.io_ws_ds <> wb_stage.io_ws_ds
 
     io_ram <> pipe_mmap.io_ram
+
+    /*// trace部分代码
+    val io_trace = new Bundle {
+        val debug_wb_pc = out Bits(32 bits)
+        val debug_wb_rf_wen = out Bits(4 bits)
+        val debug_wb_rf_wnum = out Bits(5 bits)
+        val debug_wb_rf_wdata = out Bits(32 bits)
+    }
+    io_trace <> wb_stage.io_trace*/
 }
 object Main{
   def main(args: Array[String]):Unit = {

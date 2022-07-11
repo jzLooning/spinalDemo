@@ -8,7 +8,7 @@ class EXStage extends Component {
         val ds_to_es_valid = in Bool()
         val op_st = in Bool()
         val op_mem_l = in Bool()
-        val alu_op = in Bits(9 bits)
+        val alu_op = in Bits(11 bits)
         val load_op = in Bool()
         val src1_is_sa = in Bool()
         val src1_is_pc = in Bool()
@@ -53,7 +53,7 @@ class EXStage extends Component {
     val ds_bus_get = io_ds_es.ds_to_es_valid && io_ds_es.es_allowin
     val op_st = Reg(Bool()) init (false)
     val op_mem_l = Reg(Bool()) init (false)
-    val alu_op = Reg(Bits(9 bits)) init (0)
+    val alu_op = Reg(Bits(11 bits)) init (0)
     val load_op = Reg(Bool()) init (false)
     val src1_is_sa = Reg(Bool()) init (false)
     val src1_is_pc = Reg(Bool()) init (false)

@@ -14,6 +14,7 @@ class Regfile extends Component {
     }
 
     val regfile = Reg(Vec(Bits(32 bits),32))
+    regfile.foreach(_.init(0))
     when(io.we) {
         regfile(io.waddr) := io.wdata
     }

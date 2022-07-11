@@ -58,7 +58,27 @@ class MemStage extends Component {
     }
 
     // 访存部分
-    val mem_result = op_mem_l ? io_mem.data_data_out(7 downto 0).asUInt.resize(32).asBits | io_mem.data_data_out
+    val mem_lb_result = Bits(32 bits)
+    val mem_result = Bits(32 bits)
+    switch(addr_2) {
+        is(0){
+            mem_lb_result := io_mem.data_data_out(7 downto 0).asSInt.resize(32 bits).asBits
+        }
+        is(1){
+            mem_lb_result := io_mem.data_data_out(15 downto 8).asSInt.resize(32 bits).asBits
+        }
+        is(2){
+            mem_lb_result := io_mem.data_data_out(23 downto 16).asSInt.resize(32 bits).asBits
+        }
+        is(3){
+            mem_lb_result := io_mem.data_data_out(31 downto 24).asSInt.resize(32 bits).asBits
+        }
+    }
+    when(op_mem_l) {
+        mem_result := mem_lb_result
+    }otherwise {
+        mem_result := io_mem.data_data_out
+    }
     val final_result = res_from_mem ? mem_result | es_to_ms_result
 
     // 打包信号到下一级

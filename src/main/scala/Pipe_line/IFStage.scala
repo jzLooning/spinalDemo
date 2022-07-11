@@ -37,10 +37,12 @@ class IFStage() extends Component {
     io_fs_ds.fs_to_ds_valid := fs_valid && fs_ready_go
     when(fs_allowin) {
         fs_pc := next_pc
-        fs_inst := io_mmap.inst_data
     }
 
     //读取数据
+    when(fs_allowin) {
+        fs_inst := io_mmap.inst_data
+    }
     io_mmap.inst_pc := next_pc.asBits
-    io_mmap.inst_re := True
+    io_mmap.inst_re := io_fs_ds.ds_allowin || !fs_valid
 }
