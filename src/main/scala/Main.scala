@@ -51,14 +51,14 @@ class CpuTop extends Component {
 
     io_ram <> pipe_mmap.io_ram
 
-    /*// trace部分代码
-    val io_trace = new Bundle {
-        val debug_wb_pc = out Bits(32 bits)
-        val debug_wb_rf_wen = out Bits(4 bits)
-        val debug_wb_rf_wnum = out Bits(5 bits)
-        val debug_wb_rf_wdata = out Bits(32 bits)
-    }
-    io_trace <> wb_stage.io_trace*/
+//    // trace部分代码
+//    val io_trace = new Bundle {
+//        val debug_wb_pc = out Bits(32 bits)
+//        val debug_wb_rf_wen = out Bits(4 bits)
+//        val debug_wb_rf_wnum = out Bits(5 bits)
+//        val debug_wb_rf_wdata = out Bits(32 bits)
+//    }
+//    io_trace <> wb_stage.io_trace
 }
 object Main{
   def main(args: Array[String]):Unit = {

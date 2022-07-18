@@ -49,16 +49,16 @@ class WbStage extends Component {
     io_ws_bubble.dest := dest
     io_ws_bubble.result := result
 
-    /*// trace部分代码
-    val io_trace = new Bundle {
-        val debug_wb_pc = out Bits(32 bits)
-        val debug_wb_rf_wen = out Bits(4 bits)
-        val debug_wb_rf_wnum = out Bits(5 bits)
-        val debug_wb_rf_wdata = out Bits(32 bits)
-    }
-    io_trace.debug_wb_pc := ws_pc
-    val reg_w_sign = gr_we && ws_valid
-    io_trace.debug_wb_rf_wen := (reg_w_sign ## reg_w_sign ## reg_w_sign ## reg_w_sign).asBits
-    io_trace.debug_wb_rf_wnum := dest
-    io_trace.debug_wb_rf_wdata := result*/
+//    // trace部分代码
+//    val io_trace = new Bundle {
+//        val debug_wb_pc = out Bits(32 bits)
+//        val debug_wb_rf_wen = out Bits(4 bits)
+//        val debug_wb_rf_wnum = out Bits(5 bits)
+//        val debug_wb_rf_wdata = out Bits(32 bits)
+//    }
+//    io_trace.debug_wb_pc := ws_pc
+//    val reg_w_sign = gr_we && ws_valid
+//    io_trace.debug_wb_rf_wen := (reg_w_sign ## reg_w_sign ## reg_w_sign ## reg_w_sign).asBits
+//    io_trace.debug_wb_rf_wnum := dest
+//    io_trace.debug_wb_rf_wdata := result
 }
