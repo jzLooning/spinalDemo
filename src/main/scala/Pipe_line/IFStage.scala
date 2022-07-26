@@ -34,7 +34,7 @@ class IFStage() extends Component {
         fs_valid := True
     }
     io_fs_ds.fs_to_ds_valid := fs_valid && fs_ready_go
-    when(fs_allowin) {
+    when(fs_allowin && io_mmap.inst_ready) {
         fs_pc := next_pc
     }
 
