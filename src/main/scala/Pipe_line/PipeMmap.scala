@@ -237,7 +237,7 @@ class PipeMmap extends Component {
     // 处理交互请求
     val inst_ready = Bool();
     val inst_ready_r = RegNext(inst_ready)
-    io_inst.inst_ready := inst_ready_r && inst_ready
+    io_inst.inst_ready := inst_ready_r
         // data 优先
     when(req_inst && req_data && (ram_en_inst === ram_en_data)) {
         inst_ready := False
