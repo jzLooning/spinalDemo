@@ -60,27 +60,27 @@ class PipeMmap extends Component {
     val n_disable = True
 
     // 增加reg保护信号
-    val base_ram_addr_r = Reg(Bits(20 bits))
-    val base_ram_be_n_r = Reg(Bits(4 bits))
-    val base_ram_ce_n_r = Reg(Bool())
-    val base_ram_re_n_r = Reg(Bool())
-    val base_ram_we_n_r = Reg(Bool())
+    val base_ram_addr_r = Reg(Bits(20 bits)) init(0)
+    val base_ram_be_n_r = Reg(Bits(4 bits)) init(0)
+    val base_ram_ce_n_r = Reg(Bool()) init(True)
+    val base_ram_re_n_r = Reg(Bool()) init(True)
+    val base_ram_we_n_r = Reg(Bool()) init(True)
 
     val base_ram_rdata = Bits(32 bits)
 
 
-    val ext_ram_addr_r = Reg(Bits(20 bits))
-    val ext_ram_be_n_r = Reg(Bits(4 bits))
-    val ext_ram_ce_n_r = Reg(Bool())
-    val ext_ram_re_n_r = Reg(Bool())
-    val ext_ram_we_n_r = Reg(Bool())
+    val ext_ram_addr_r = Reg(Bits(20 bits)) init(0)
+    val ext_ram_be_n_r = Reg(Bits(4 bits)) init(0)
+    val ext_ram_ce_n_r = Reg(Bool()) init(True)
+    val ext_ram_re_n_r = Reg(Bool()) init(True)
+    val ext_ram_we_n_r = Reg(Bool()) init(True)
 
     val ext_ram_rdata = Bits(32 bits)
 
-    val serial_rdata_en_sign_r = Reg(Bool())
-    val serial_rdata_en_data_r = Reg(Bool())
-    val serial_wdata_r = Reg(Bits(8 bits))
-    val serial_wdata_en_r = Reg(Bool())
+    val serial_rdata_en_sign_r = Reg(Bool()) init(False)
+    val serial_rdata_en_data_r = Reg(Bool()) init(False)
+    val serial_wdata_r = Reg(Bits(8 bits)) init(0)
+    val serial_wdata_en_r = Reg(Bool()) init(False)
 
     val inst_ready = Reg(Bool()) init(True)
 
