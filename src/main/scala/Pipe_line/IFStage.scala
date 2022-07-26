@@ -10,13 +10,12 @@ class IFStage() extends Component {
     }
     val io_mmap = new Bundle {
         val inst_pc = out Bits(32 bits)
-        val inst_re = out Bool()
         val inst_ready = in Bool()
         val inst_data = in Bits(32 bits)
     }
     //设置并初始化fs_pc
     val fs_pc = Reg(UInt(32 bits)) init(U"32'h7ffffffc")
-    val fs_inst = Reg(Bits(32 bits)) init(0)
+    val fs_inst = Bits(32 bits)
     io_fs_ds.fs_pc := fs_pc.asBits
     io_fs_ds.fs_inst := fs_inst.asBits
     //处理br_bus
@@ -40,9 +39,6 @@ class IFStage() extends Component {
     }
 
     //读取数据
-    when(fs_allowin) {
-        fs_inst := io_mmap.inst_data
-    }
-    io_mmap.inst_pc := next_pc.asBits
-    io_mmap.inst_re := io_fs_ds.ds_allowin || !fs_valid
+    fs_inst := io_mmap.inst_data
+    io_mmap.inst_pc := (io_mmap.inst_ready && fs_allowin) ? next_pc.asBits | fs_pc.asBits
 }

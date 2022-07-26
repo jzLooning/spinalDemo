@@ -67,7 +67,7 @@ class EXStage extends Component {
     val rt_value = Reg(Bits(32 bits)) init (0)
     val es_pc = Reg(Bits(32 bits)) init (0)
     val imm_zexi = Reg(Bool()) init (false)
-    val es_ready_go_i = Reg(Bool()) init(True)
+    val es_ready_go_i = True//Reg(Bool()) init(True)
     val es_ready_go = es_ready_go_i
     io_es_ms.es_to_ms_valid := es_valid && es_ready_go
     when(io_ds_es.es_allowin) {
@@ -142,16 +142,16 @@ class EXStage extends Component {
     io_es_bubble.dest := dest
     io_es_bubble.result := alu_result
 
-    // 设计写后读问题
-    val mem_w_before = RegNext(mem_we) init(False) //前一个周期是否写了数据
-    val mem_w_addr = Reg(Bits()) init(0) //前一个周期写数据地址
-    when(mem_we) {
-        mem_w_addr := alu_result
-    }
-    when(es_ready_go_i) {
-        es_ready_go_i := !(mem_w_before && load_op && (mem_w_addr === alu_result) && (mem_w_addr =/= B"32'hBFD003F8"))
-    }otherwise {
-        es_ready_go_i := True
-    }
+//    // 设计写后读问题
+//    val mem_w_before = RegNext(mem_we) init(False) //前一个周期是否写了数据
+//    val mem_w_addr = Reg(Bits()) init(0) //前一个周期写数据地址
+//    when(mem_we) {
+//        mem_w_addr := alu_result
+//    }
+//    when(es_ready_go_i) {
+//        es_ready_go_i := !(mem_w_before && load_op && (mem_w_addr === alu_result) && (mem_w_addr =/= B"32'hBFD003F8"))
+//    }otherwise {
+//        es_ready_go_i := True
+//    }
 
 }

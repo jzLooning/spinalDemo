@@ -23,7 +23,6 @@ class MemStage extends Component {
     }
     val io_mem = new Bundle {
         val data_data_out = in Bits(32 bits)
-        val data_data_ready = in Bool()
     }
     val io_ms_bubble = new Bundle {
         val reg_w_valid = out Bool()
@@ -31,7 +30,6 @@ class MemStage extends Component {
         val result = out Bits(32 bits)
     }
     // 流水级信号处理
-    val es_to_ms_valid = Reg(Bool()) init(false)
     val addr_2 = Reg(Bits(2 bits)) init(0)
     val op_mem_l = Reg(Bool()) init(false)
     val res_from_mem = Reg(Bool()) init(false)
@@ -39,7 +37,7 @@ class MemStage extends Component {
     val dest = Reg(Bits(5 bits)) init(0)
     val es_to_ms_result = Reg(Bits(32 bits)) init(0)
     val ms_pc = Reg(Bits(32 bits)) init(0)
-    val ms_ready_go = io_mem.data_data_ready
+    val ms_ready_go = True
     val ms_valid = Reg(Bool()) init(false)
     io_es_ms.ms_allowin := !ms_valid || ms_ready_go && io_ms_ws.ws_allowin
     io_ms_ws.ms_to_ws_valid := ms_valid && ms_ready_go
@@ -74,11 +72,8 @@ class MemStage extends Component {
             mem_lb_result := io_mem.data_data_out(31 downto 24).asSInt.resize(32 bits).asBits
         }
     }
-    when(op_mem_l) {
-        mem_result := mem_lb_result
-    }otherwise {
-        mem_result := io_mem.data_data_out
-    }
+    mem_result := op_mem_l ? mem_lb_result | io_mem.data_data_out
+
     val final_result = res_from_mem ? mem_result | es_to_ms_result
 
     // 打包信号到下一级
