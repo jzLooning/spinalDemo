@@ -54,7 +54,7 @@ class EXStage extends Component {
     val op_st = Reg(Bool()) init (false)
     val op_mem_l = Reg(Bool()) init (false)
     val alu_op = Reg(Bits(11 bits)) init (0)
-    val load_op = Reg(Bool()) init (false)
+    val mem_load = Reg(Bool()) init (false)
     val src1_is_sa = Reg(Bool()) init (false)
     val src1_is_pc = Reg(Bool()) init (false)
     val src2_is_imm = Reg(Bool()) init (false)
@@ -67,7 +67,9 @@ class EXStage extends Component {
     val rt_value = Reg(Bits(32 bits)) init (0)
     val es_pc = Reg(Bits(32 bits)) init (0)
     val imm_zexi = Reg(Bool()) init (false)
-    val es_ready_go_i = True//Reg(Bool()) init(True)
+    val alu_ready = Bool()
+    val mem_ready = Bool()
+    val es_ready_go_i = alu_ready && mem_ready
     val es_ready_go = es_ready_go_i
     io_es_ms.es_to_ms_valid := es_valid && es_ready_go
     when(io_ds_es.es_allowin) {
@@ -77,7 +79,7 @@ class EXStage extends Component {
         op_st := io_ds_es.op_st
         op_mem_l := io_ds_es.op_mem_l
         alu_op := io_ds_es.alu_op
-        load_op := io_ds_es.load_op
+        mem_load := io_ds_es.load_op
         src1_is_sa := io_ds_es.src1_is_sa
         src1_is_pc := io_ds_es.src1_is_pc
         src2_is_imm := io_ds_es.src2_is_imm
@@ -94,6 +96,11 @@ class EXStage extends Component {
     io_ds_es.es_allowin := !es_valid || es_ready_go && io_es_ms.ms_allowin
     when(io_ds_es.es_allowin) {es_valid := io_ds_es.ds_to_es_valid}
 
+    // 将访存信号多显示一个周期
+    val mem_rw = mem_we | mem_load
+    val mem_rw_r = RegNext(mem_rw)
+    mem_ready := !mem_rw || mem_rw && mem_rw_r
+
     // 处理数据
     val alu_src1 = src1_is_sa ? imm(10 downto 6).asUInt.resize(32).asBits | (src1_is_pc ? es_pc | rs_value)
     val src2_imm = imm_zexi ? imm.asUInt.resize(32).asBits | imm.asSInt.resize(32).asBits
@@ -103,6 +110,7 @@ class EXStage extends Component {
     alu.io.alu_src1 := alu_src1
     alu.io.alu_src2 := alu_src2
     val alu_result = alu.io.alu_result
+    alu_ready := alu.io.ready
 
     // 处理访存
     val st_value = rt_value(7 downto 0)##rt_value(7 downto 0)##rt_value(7 downto 0)##rt_value(7 downto 0)
@@ -125,20 +133,20 @@ class EXStage extends Component {
     }
     io_data.data_byte_en := (mem_we && op_st) ? byte_enable | B"4'b1111"
     io_data.data_we := mem_we && es_valid
-    io_data.data_re := load_op && es_valid
+    io_data.data_re := mem_load && es_valid
 
     // 下一级信号
     io_es_ms.addr_2 := alu_result(1 downto 0)
     io_es_ms.op_mem_l := op_mem_l
-    io_es_ms.res_from_mem := load_op
+    io_es_ms.res_from_mem := mem_load
     io_es_ms.gr_we := gr_we
     io_es_ms.dest := dest
     io_es_ms.es_to_ms_result := alu_result
     io_es_ms.es_pc := es_pc
 
     // 流水线前递
-    io_es_bubble.reg_l_valid := es_valid && !src2_is_8 && load_op
-    io_es_bubble.reg_w_valid := es_valid && !src2_is_8 && gr_we && !load_op
+    io_es_bubble.reg_l_valid := es_valid && !src2_is_8 && mem_load
+    io_es_bubble.reg_w_valid := es_valid && !src2_is_8 && gr_we && !mem_load
     io_es_bubble.dest := dest
     io_es_bubble.result := alu_result
 
